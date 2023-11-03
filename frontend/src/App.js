@@ -1,18 +1,24 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button } from "react-bootstrap";
-import { Route } from "react-router-dom";
-import Homepage from './Pages/Homepage'
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import Homepage from "./Pages/Homepage";
+import Login from "./Pages/Loginpage";
+import './index.css'
 
 function App() {
   return (
-    <div className="App">
-      <Route path="/" exact/>
-        <Homepage/>
-      <Route />
-      <Route path="/chats" exact/>
-
-      <Route />
-    </div>
+    <Router>
+      <div className="App">
+        <Switch>
+          <Route path="/authentication">
+          <Login />
+          </Route>
+          <Route path="/" exact>
+          <Homepage />
+          </Route>
+        </Switch>
+      </div>
+    </Router>
   );
 }
 
