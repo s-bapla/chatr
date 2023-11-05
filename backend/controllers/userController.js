@@ -4,7 +4,7 @@ const User = require("../models/user");
 
 const getJwtToken = (id) => {
   return jwt.sign({ id }, process.env.SECRET, {
-    expiresIn: 1000 * 60 * 60 * 24 * 30,
+    expiresIn: 1000 * 60 * 60 * 24 * 7,
   });
 };
 
@@ -20,7 +20,7 @@ const signupUser = asyncHandler(async (req, res) => {
 
   if (existingUser) {
     res.status(400);
-    throw new Error("Email is in use already");
+    throw new Error("Email is already in use");
   }
 
   const user = new User(req.body);
@@ -39,12 +39,19 @@ const signupUser = asyncHandler(async (req, res) => {
   }
 });
 
-const authorizeUser = asyncHandler(async (req, res) => {
+const authenticateUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
+  console.log(email, password)
 
   const user = await User.findOne({ email });
+  
+  if (!user) {
+    throw new Error("Invalid email");
+  }
 
-  if (user) {
+  matchedPassword = await user.authenticatePassword(password);
+
+  if (user && matchedPassword) {
     res.json({
       _id: user._id,
       username: user.username,
@@ -52,9 +59,14 @@ const authorizeUser = asyncHandler(async (req, res) => {
       token: getJwtToken(user._id),
     });
   } else {
-    res.status(401);
+    res.status(400);
     throw new Error("Invalid credentials");
   }
 });
 
-module.exports = { signupUser };
+const getUsers = asyncHandler(async (req, res) => {
+    const keyword = req.query.search;
+    
+})
+
+module.exports = { signupUser, authenticateUser, getUsers };
